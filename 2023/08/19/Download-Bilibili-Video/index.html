@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png">
+  <link rel="mask-icon" href="/images/favicon.png" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"acolevia.online","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="起因 最近我最喜欢的一个 B 站 up 主团队宣布解散了，在最后一条视频里也说了账号会还给公司，因为担心视频会被删除掉，所以想着都下到本地来  网上确实有插件可以下载视频，但是需要一个一个手动下，这样太麻烦也不优雅，所以就想着干嘛不用 python 写一个程序批量去下   声明 本文只是记录个人操作的过程，如果有侵权请告知本人删除">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Download Bilibili Video">
+<meta property="og:url" content="https://acolevia.online/2023/08/19/Download-Bilibili-Video/index.html">
+<meta property="og:site_name" content="Acolevia&#39;s Blog">
+<meta property="og:description" content="起因 最近我最喜欢的一个 B 站 up 主团队宣布解散了，在最后一条视频里也说了账号会还给公司，因为担心视频会被删除掉，所以想着都下到本地来  网上确实有插件可以下载视频，但是需要一个一个手动下，这样太麻烦也不优雅，所以就想着干嘛不用 python 写一个程序批量去下   声明 本文只是记录个人操作的过程，如果有侵权请告知本人删除">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-08-19T10:30:49.000Z">
+<meta property="article:modified_time" content="2023-08-19T14:53:12.168Z">
+<meta property="article:author" content="Acolevia">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://acolevia.online/2023/08/19/Download-Bilibili-Video/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Download Bilibili Video | Acolevia's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Acolevia's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://acolevia.online/2023/08/19/Download-Bilibili-Video/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Acolevia">
+      <meta itemprop="description" content="share something">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Acolevia's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Download Bilibili Video
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2023-08-19 18:30:49 / 修改时间：22:53:12" itemprop="dateCreated datePublished" datetime="2023-08-19T18:30:49+08:00">2023-08-19</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h2><ul>
+<li><p>最近我最喜欢的一个 B 站 up 主团队宣布解散了，在最后一条视频里也说了账号会还给公司，因为担心视频会被删除掉，所以想着都下到本地来</p>
+</li>
+<li><p>网上确实有插件可以下载视频，但是需要一个一个手动下，这样太麻烦也不优雅，所以就想着干嘛不用 python 写一个程序批量去下</p>
+</li>
+</ul>
+<h2 id="声明"><a href="#声明" class="headerlink" title="声明"></a>声明</h2><ul>
+<li>本文只是记录个人操作的过程，如果有侵权请告知本人删除</li>
+</ul>
+<span id="more"></span>
+
+<h2 id="环境"><a href="#环境" class="headerlink" title="环境"></a>环境</h2><ul>
+<li><p>Windows 10</p>
+</li>
+<li><p>python 3.8.10</p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://github.com/soimort/you-get">you-get</a></p>
+</li>
+</ul>
+<h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><ul>
+<li><p>先通过接口拿到 up 主所有视频的 BV 号，这个接口经常会提示访问频繁，稍后再试，所以要加上一些失败重试的逻辑</p>
+</li>
+<li><p>这里设置的是失败后等待 1s，再去重试，会尝试 100 次，当拿到所有 BV 号时，返回一个列表</p>
+  <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line">def get_video_lists(page, max_retries=100):</span><br><span class="line">    global author</span><br><span class="line">    url = &#x27;https://api.bilibili.com/x/space/arc/search?mid=&#123;&#125;&amp;ps=30&amp;tid=0&amp;pn=&#123;&#125;&amp;keyword=&amp;order=pubdate&amp;jsonp=jsonp&#x27;.format(</span><br><span class="line">        user_id, page)</span><br><span class="line">    headers = &#123;</span><br><span class="line">        &quot;accept&quot;: &quot;application/json, text/plain, */*&quot;,</span><br><span class="line">        &quot;accept-encoding&quot;: &quot;gzip, deflate, br&quot;,</span><br><span class="line">        &quot;accept-language&quot;: &quot;zh,en;q=0.9,en-US;q=0.8,zh-CN;q=0.7,zh-TW;q=0.6&quot;,</span><br><span class="line">        &quot;cookie&quot;: &quot;buvid3=52EE1424-8352-DE0D-C2F9-8CEFBD6D7D2024853infoc; i-wanna-go-back=-1; _uuid=D7F4D7102-F510C-9EFD-B44C-5A15BB3D2B9825216infoc; buvid4=79C7023E-28E0-B231-6510-54E406718DAA25965-022021913-c0D4n8mIkOPQS7cPZ5EOlQ%3D%3D; CURRENT_BLACKGAP=0; LIVE_BUVID=AUTO7016452474409017; rpdid=|(Rlllkm)mY0J&#x27;uYRlkRmRum; buvid_fp_plain=undefined; blackside_state=0; fingerprint=6c8532a24d1ddc22356289c4c2d1958f; buvid_fp=34e58163f7b4e31c1736ba5b8416e000; SESSDATA=c35a2a31%2C1662290982%2Ca3c0d%2A31; bili_jct=de750fd4e484b47f40b8bb42a5a72869; DedeUserID=73827743; DedeUserID__ckMd5=9d571d9b5b827b73; sid=c3w73yp7; b_ut=5; hit-dyn-v2=1; nostalgia_conf=-1; PVID=2; innersign=0; b_lsid=B710CBE88_180E5C4ABA4; bp_video_offset_73827743=662643097963855900; CURRENT_FNVAL=80; b_timer=%7B%22ffp%22%3A%7B%22333.1007.fp.risk_52EE1424%22%3A%22180E5C4B0BF%22%2C%22333.337.fp.risk_52EE1424%22%3A%22180E5C521EF%22%2C%22333.999.fp.risk_52EE1424%22%3A%22180E5C5494B%22%7D%7D&quot;,</span><br><span class="line">        &quot;origin&quot;: &quot;https://space.bilibili.com&quot;,</span><br><span class="line">        &quot;referer&quot;: &quot;https://space.bilibili.com/518973111/video?tid=0&amp;page=2&amp;keyword=&amp;order=pubdate&quot;,</span><br><span class="line">        &quot;user-agent&quot;: &quot;Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36&quot;,</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    for _ in range(max_retries):</span><br><span class="line">        resp = requests.get(</span><br><span class="line">            url=url,</span><br><span class="line">            headers=headers</span><br><span class="line">        )</span><br><span class="line"></span><br><span class="line">        if resp.status_code != 200:</span><br><span class="line">            print(f&quot;Error: HTTP status code &#123;resp.status_code&#125;&quot;)</span><br><span class="line">            time.sleep(1)  # wait for a while before retrying</span><br><span class="line">            continue</span><br><span class="line"></span><br><span class="line">        if not resp.text:</span><br><span class="line">            print(&quot;Error: Response is empty&quot;)</span><br><span class="line">            time.sleep(1)  # wait for a while before retrying</span><br><span class="line">            continue</span><br><span class="line"></span><br><span class="line">        try:</span><br><span class="line">            js = resp.json()</span><br><span class="line">        except JSONDecodeError:</span><br><span class="line">            print(&quot;Error: Unable to parse JSON, trying again&quot;)</span><br><span class="line">            time.sleep(1)  # wait for a while before retrying</span><br><span class="line">            continue</span><br><span class="line"></span><br><span class="line">        if &#x27;code&#x27; in js and js[&#x27;code&#x27;] == -799:</span><br><span class="line">            print(f&quot;Error: &#123;js[&#x27;message&#x27;]&#125;&quot;)</span><br><span class="line">            time.sleep(1)  # wait for a while before retrying</span><br><span class="line">            continue</span><br><span class="line"></span><br><span class="line">        if &#x27;data&#x27; not in js or &#x27;list&#x27; not in js[&#x27;data&#x27;] or &#x27;vlist&#x27; not in js[&#x27;data&#x27;][&#x27;list&#x27;]:</span><br><span class="line">            print(&quot;Error: Unexpected response&quot;)</span><br><span class="line">            time.sleep(1)  # wait for a while before retrying</span><br><span class="line">            continue</span><br><span class="line"></span><br><span class="line">        vlist = js[&#x27;data&#x27;][&#x27;list&#x27;][&#x27;vlist&#x27;]</span><br><span class="line">        author = vlist[0][&#x27;author&#x27;]</span><br><span class="line">        bvid_list = [x.get(&#x27;bvid&#x27;) for x in vlist]</span><br><span class="line">        return bvid_list</span><br><span class="line"></span><br><span class="line">    print(f&quot;Error: Failed to get data after &#123;max_retries&#125; attempts&quot;)</span><br><span class="line">    return []</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在当前目录下创建 up 主名字的目录，后续视频都下到这个目录下</p>
+  <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">current_directory = os.getcwd()</span><br><span class="line">folder_path = os.path.join(current_directory, author)</span><br><span class="line">if not os.path.exists(folder_path):</span><br><span class="line">    os.makedirs(folder_path)</span><br><span class="line">    print(f&quot;创建文件夹: &#123;folder_path&#125;&quot;)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>调用 you-get 下载每一个视频</p>
+  <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">def download_videos(bv):</span><br><span class="line">    url = &#x27;https://www.bilibili.com/video/&#123;&#125;&#x27;.format(bv)</span><br><span class="line">    print(&quot;download link&quot;, url, flush=True)</span><br><span class="line">    command = [&#x27;you-get&#x27;, &#x27;-o&#x27;, folder_path, url]</span><br><span class="line">    result = subprocess.run(command)</span><br><span class="line">    if result.returncode != 0:</span><br><span class="line">        raise RuntimeError(f&#x27;Failed to download video &#123;bv&#125;&#x27;)</span><br><span class="line">    print(f&#x27;Video &#123;bv&#125; downloaded successfully&#x27;, flush=True)</span><br><span class="line">    time.sleep(5)</span><br><span class="line">    return bv</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>直接调用上面下载视频的方法，每次只会下载一个视频，所以要用多线程去提高并发数，这里是同时 5 个线程</p>
+  <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:</span><br><span class="line">futures = &#123;executor.submit(download_videos, bv): bv for bv in bv_lists&#125;</span><br><span class="line"></span><br><span class="line">for future in concurrent.futures.as_completed(futures):</span><br><span class="line">    bv = futures[future]</span><br><span class="line">    try:</span><br><span class="line">        future.result()</span><br><span class="line">    except Exception as e:</span><br><span class="line">        print(f&#x27;Error downloading video &#123;bv&#125;: &#123;e&#125;&#x27;, flush=True)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>最后由于 you-get 不仅会下载视频，也会下载弹幕评论，文件以 <code>.xml</code> 为后缀，不需要的话可以批量删掉</p>
+  <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">xml_files = glob.glob(os.path.join(folder_path, &#x27;*.xml&#x27;))</span><br><span class="line">for xml_file in xml_files:</span><br><span class="line">    try:</span><br><span class="line">        os.remove(xml_file)</span><br><span class="line">        print(f&#x27;Successfully deleted &#123;xml_file&#125;&#x27;)</span><br><span class="line">    except Exception as e:</span><br><span class="line">        print(f&#x27;Error deleting &#123;xml_file&#125;: &#123;e&#125;&#x27;)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>完整的代码地址：<a target="_blank" rel="noopener" href="https://github.com/Acolevia/DownloadVideo">https://github.com/Acolevia/DownloadVideo</a></p>
+</li>
+</ul>
+<h2 id="不足"><a href="#不足" class="headerlink" title="不足"></a>不足</h2><ul>
+<li>由于 B 站默认不登录的情况，只能下载清晰度较低的视频，如果想下载高画质的视频，需要加上已登录的 Cookie 参数</li>
+</ul>
+<h2 id="后续"><a href="#后续" class="headerlink" title="后续"></a>后续</h2><ul>
+<li><p>在寻找如何下载高画质的视频时，发现了一个更好用的工具，地址：<a target="_blank" rel="noopener" href="https://github.com/HFrost0/bilix">https://github.com/HFrost0/bilix</a></p>
+</li>
+<li><p>下载指定 up 主视频</p>
+  <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bilix get_up &#x27;https://space.bilibili.com/up主id&#x27; --num [视频数]</span><br></pre></td></tr></table></figure></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/07/26/Audio-Extraction/" rel="prev" title="Audio Extraction">
+      <i class="fa fa-chevron-left"></i> Audio Extraction
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B5%B7%E5%9B%A0"><span class="nav-number">1.</span> <span class="nav-text">起因</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A3%B0%E6%98%8E"><span class="nav-number">2.</span> <span class="nav-text">声明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%8E%AF%E5%A2%83"><span class="nav-number">3.</span> <span class="nav-text">环境</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%9D%E8%B7%AF"><span class="nav-number">4.</span> <span class="nav-text">思路</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8D%E8%B6%B3"><span class="nav-number">5.</span> <span class="nav-text">不足</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%8E%E7%BB%AD"><span class="nav-number">6.</span> <span class="nav-text">后续</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Acolevia</p>
+  <div class="site-description" itemprop="description">share something</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">6</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Acolevia" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Acolevia" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/Acolevia1" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;Acolevia1" rel="noopener" target="_blank"><i class="fab fa-twitter fa-fw"></i></a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Acolevia</span>
+</div>
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : 'b33afd2b937793712f69',
+      clientSecret: 'dcf1e35e0d00d99a37b065517807eaf3e18abf9f',
+      repo        : 'Acolevia.github.io',
+      owner       : 'Acolevia',
+      admin       : ['Acolevia'],
+      id          : '5b1d236674d9eb8fb1ae89411920684a',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>
