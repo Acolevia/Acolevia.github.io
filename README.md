@@ -1,6 +1,6 @@
 # Acolevia's blog
 
-* [个人博客](https://acolevia.online/)
+* [个人博客](https://acolevia.xyz/)
 
 ## 部署
 
